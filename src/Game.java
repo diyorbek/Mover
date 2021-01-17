@@ -31,6 +31,7 @@ public class Game {
 
         public void displayBoard() {
             board.display();
+            board.drawElement('█', 0, 0);
 
             try {
                 if (System.in.available() != 0) {

@@ -1,10 +1,10 @@
 public class Board {
-    private int width = 40;
-    private int height = 12;
-    private int matrixWidth = width + 2;
-    private int matrixHeight = height + 2;
+    private final int width = 40;
+    private final int height = 12;
+    private final int matrixWidth = width + 2;
+    private final int matrixHeight = height + 2;
 
-    private char[][] matrix = new char[matrixHeight][matrixWidth];
+    private final char[][] matrix = new char[matrixHeight][matrixWidth];
 
     Board() {
         for (int i = 0; i < matrixHeight; i++) {
@@ -27,7 +27,7 @@ public class Board {
 
         matrix[matrixHeight - 1][0] = '└';
         matrix[matrixHeight - 1][matrixWidth - 1] = '┘';
-        
+
         for (int i = 1; i < matrixHeight - 1; i++) {
             matrix[i][0] = '│';
             matrix[i][matrixWidth - 1] = '│';
@@ -40,6 +40,14 @@ public class Board {
                 System.out.print(matrix[i][j]);
             }
             System.out.println();
+        }
+    }
+
+    public void drawElement(char element, int row, int column) {
+        if (row < height && column < width) {
+            matrix[row + 1][column + 1] = element;
+        } else {
+            System.out.println("Error drawing element.");
         }
     }
 }
