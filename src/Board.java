@@ -7,13 +7,20 @@ public class Board {
     private final char[][] matrix = new char[matrixHeight][matrixWidth];
 
     Board() {
+        clearBoard();
+    }
+
+    private void clearBoard() {
+        initMatrix();
+        drawBorders();
+    }
+
+    private void initMatrix() {
         for (int i = 0; i < matrixHeight; i++) {
             for (int j = 0; j < matrixWidth; j++) {
                 matrix[i][j] = ' ';
             }
         }
-
-        drawBorders();
     }
 
     private void drawBorders() {

@@ -30,8 +30,8 @@ public class Game {
         }
 
         public void displayBoard() {
-            board.display();
             board.drawElement('█', 0, 0);
+            board.display();
 
             try {
                 if (System.in.available() != 0) {
