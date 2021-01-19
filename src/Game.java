@@ -9,6 +9,9 @@ public class Game {
     private static Player player = new Player('█', board);
 
     public static void main(String[] args) {
+        board.randomlyPlaceObstacles(5, '#');
+        board.randomlyPlaceObstacles(5, '*');
+
         tmr.schedule(new MainLoop(), 0, 100);
     }
 

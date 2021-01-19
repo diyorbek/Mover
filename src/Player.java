@@ -39,7 +39,7 @@ public class Player {
     }
 
     public void moveDown() {
-        if (this.board.isCellAvailable(currentPosition[0] + 1, currentPosition[1] - 1)) {
+        if (this.board.isCellAvailable(currentPosition[0] + 1, currentPosition[1])) {
             this.board.removeElement(currentPosition[0], currentPosition[1]);
             ++currentPosition[0];
             this.board.drawElement(currentPosition[0], currentPosition[1], this.avatar);

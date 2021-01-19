@@ -7,10 +7,10 @@ public class Board {
     private final char BOTTOM_LEFT_BORDER = '└';
     private final char BOTTOM_RIGHT_BORDER = '┘';
 
-    private final int width = 40;
-    private final int height = 12;
-    private final int matrixWidth = width + 2;
-    private final int matrixHeight = height + 2;
+    public static final int WIDTH = 40;
+    public static final int HEIGHT = 12;
+    private final int matrixWidth = WIDTH + 2;
+    private final int matrixHeight = HEIGHT + 2;
 
     private final char[][] matrix = new char[matrixHeight][matrixWidth];
 
@@ -67,7 +67,7 @@ public class Board {
     }
 
     public void removeElement(int row, int column) {
-        if (isInsideMatrix(row, column)) {
+        if (isInsideBoard(row, column)) {
             setMatrixValue(row, column, BLANK_CELL);
         } else {
             System.out.println("Error removing element.");
@@ -83,10 +83,23 @@ public class Board {
     }
 
     public boolean isCellAvailable(int row, int column) {
-        return isInsideMatrix(row, column) && matrix[row + 1][column + 1] == BLANK_CELL;
+        return isInsideBoard(row, column) && matrix[row + 1][column + 1] == BLANK_CELL;
     }
 
-    public boolean isInsideMatrix(int row, int column) {
-        return row < height && column < width;
+    public boolean isInsideBoard(int row, int column) {
+        return row < HEIGHT && column < WIDTH;
+    }
+
+    public void randomlyPlaceObstacles(int count, char obstacle) {
+        for (int i = 0; i < count; i++) {
+            int row, column;
+
+            do {
+                row = (int) (Math.random() * Board.HEIGHT);
+                column = (int) (Math.random() * Board.WIDTH);
+            } while (!isCellAvailable(row, column));
+
+            drawElement(row, column, obstacle);
+        }
     }
 }
