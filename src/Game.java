@@ -4,8 +4,10 @@ import java.util.TimerTask;
 
 public class Game {
     private static int i = 0;
-    private static Board board = new Board();
     private static Timer tmr = new Timer();
+
+    private static Board board = new Board();
+    private static Player player = new Player('█', board);
 
     public static void main(String[] args) {
         tmr.schedule(new MainLoop(), 0, 300);
@@ -30,12 +32,15 @@ public class Game {
         }
 
         public void displayBoard() {
-            board.drawElement('█', 0, 0);
             board.display();
 
             try {
                 if (System.in.available() != 0) {
                     int c = System.in.read();
+
+                    if (c == 'd') {
+                        player.moveRight(board);
+                    }
 
                     if (c == 'q') {
                         tmr.cancel();
