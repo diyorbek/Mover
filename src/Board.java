@@ -37,10 +37,13 @@ public class Board {
     }
 
     public Entity get(int x, int y) {
-        return board[y][x];
+        if (isInsideBoard(x, y)) {
+            return board[y][x];
+        }
+        return null;
     }
 
-    public boolean set(int x, int y, Entity entity) {
+    public boolean insert(int x, int y, Entity entity) {
         if (isPositionEmpty(x, y)) {
             board[y][x] = entity;
             return true;
@@ -56,6 +59,29 @@ public class Board {
         }
         System.out.println("Error erasing entity.");
         return false;
+    }
+
+    private boolean canMoveEntity(Entity entity) {
+        return entity != null && !(entity instanceof Obstacle);
+
+    }
+
+    public boolean moveEntityTo(int originX, int originY, int targetX, int targetY) {
+        Entity origin = get(originX, originY);
+        Entity target = get(targetX, targetY);
+
+        if ((origin != null) && canMoveEntity(target)) {
+            board[originY][originX] = target;
+            board[targetY][targetX] = origin;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean moveEntityLeft(int x, int y) {
+        return moveEntityTo(x, y, x - 1, y);
     }
 
 

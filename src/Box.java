@@ -1,6 +1,6 @@
 public class Box extends Obstacle {
     Box() {
-        super(ObstacleType.BOX, '#');
+        super(ObstacleType.BOX, true, '#');
     }
 
     public static void randomlyPlaceOnBoard(Board board, int count) {
@@ -12,7 +12,7 @@ public class Box extends Obstacle {
                 y = (int) (Math.random() * Board.HEIGHT);
             } while (!board.isPositionEmpty(x, y));
 
-            board.set(x, y, new Box());
+            board.insert(x, y, new Box());
         }
     }
 }

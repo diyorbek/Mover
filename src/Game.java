@@ -48,6 +48,10 @@ public class Game {
                             player.moveLeft();
                             break;
 
+                        case 'A':
+                            player.pushLeft();
+                            break;
+
                         case 'w':
                             player.moveUp();
                             break;
@@ -56,11 +60,11 @@ public class Game {
                             player.moveDown();
                             break;
 
-                        case 'q': {
-                            tmr.cancel();
-                            tmr.purge();
-                            break;
-                        }
+//                        case 'q': {
+//                            tmr.cancel();
+//                            tmr.purge();
+//                            break;
+//                        }
 
                         default:
                             break;

@@ -14,7 +14,7 @@ public class Player extends Entity {
     Player(char displayValue, Board board) {
         super(EntityType.PLAYER, displayValue);
         this.board = board;
-        this.board.set(position.x, position.y, this);
+        this.board.insert(position.x, position.y, this);
     }
 
     public int[] getCurrentPosition() {
@@ -25,23 +25,32 @@ public class Player extends Entity {
         if (this.board.isPositionEmpty(position.x + 1, position.y)) {
             this.board.erase(position.x, position.y);
             ++position.x;
-            this.board.set(position.x, position.y, this);
+            this.board.insert(position.x, position.y, this);
         }
     }
 
-    public void moveLeft() {
-        if (this.board.isPositionEmpty(position.x - 1, position.y)) {
-            this.board.erase(position.x, position.y);
+    public boolean moveLeft() {
+        if (board.moveEntityLeft(position.x, position.y)) {
             --position.x;
-            this.board.set(position.x, position.y, this);
+            return true;
         }
+        return false;
+    }
+
+    public boolean pushLeft() {
+        if (board.get(position.x - 1, position.y) instanceof Obstacle) {
+            if (board.moveEntityLeft(position.x - 1, position.y)) {
+                return moveLeft();
+            }
+        }
+        return false;
     }
 
     public void moveUp() {
         if (this.board.isPositionEmpty(position.x, position.y - 1)) {
             this.board.erase(position.x, position.y);
             --position.y;
-            this.board.set(position.x, position.y, this);
+            this.board.insert(position.x, position.y, this);
         }
     }
 
@@ -49,7 +58,7 @@ public class Player extends Entity {
         if (this.board.isPositionEmpty(position.x, position.y + 1)) {
             this.board.erase(position.x, position.y);
             ++position.y;
-            this.board.set(position.x, position.y, this);
+            this.board.insert(position.x, position.y, this);
         }
     }
 }
