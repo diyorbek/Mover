@@ -59,7 +59,7 @@ public class Player extends Entity {
                 return moveRight();
             }
         }
-        return false;
+        return pullRight();
     }
 
     public boolean pushLeft() {
@@ -68,7 +68,7 @@ public class Player extends Entity {
                 return moveLeft();
             }
         }
-        return false;
+        return pullLeft();
     }
 
     public boolean pushUp() {
@@ -77,13 +77,49 @@ public class Player extends Entity {
                 return moveUp();
             }
         }
-        return false;
+        return pullUp();
     }
 
     public boolean pushDown() {
         if (board.select(position.x, position.y + 1) instanceof Obstacle) {
             if (board.moveEntityDown(position.x, position.y + 1)) {
                 return moveDown();
+            }
+        }
+        return pullDown();
+    }
+
+    public boolean pullRight() {
+        if (board.select(position.x - 1, position.y) instanceof Obstacle) {
+            if (moveRight()) {
+                return board.moveEntityRight(position.x - 2, position.y);
+            }
+        }
+        return false;
+    }
+
+    public boolean pullLeft() {
+        if (board.select(position.x + 1, position.y) instanceof Obstacle) {
+            if (moveLeft()) {
+                return board.moveEntityLeft(position.x + 2, position.y);
+            }
+        }
+        return false;
+    }
+
+    public boolean pullUp() {
+        if (board.select(position.x, position.y + 1) instanceof Obstacle) {
+            if (moveUp()) {
+                return board.moveEntityUp(position.x, position.y + 2);
+            }
+        }
+        return false;
+    }
+
+    public boolean pullDown() {
+        if (board.select(position.x, position.y - 1) instanceof Obstacle) {
+            if (moveDown()) {
+                return board.moveEntityDown(position.x, position.y - 2);
             }
         }
         return false;
