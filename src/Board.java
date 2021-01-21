@@ -1,4 +1,12 @@
 public class Board {
+    public static final int WIDTH = 40;
+    public static final int HEIGHT = 12;
+    private final Entity[][] board = new Entity[HEIGHT][WIDTH];
+
+    private final int matrixWidth = WIDTH + 2;
+    private final int matrixHeight = HEIGHT + 2;
+    private final char[][] matrix = new char[matrixHeight][matrixWidth];
+
     private final char BLANK_CELL = ' ';
     private final char HORIZONTAL_BORDER = '─';
     private final char VERTICAL_BORDER = '│';
@@ -7,23 +15,56 @@ public class Board {
     private final char BOTTOM_LEFT_BORDER = '└';
     private final char BOTTOM_RIGHT_BORDER = '┘';
 
-    public static final int WIDTH = 40;
-    public static final int HEIGHT = 12;
-    private final int matrixWidth = WIDTH + 2;
-    private final int matrixHeight = HEIGHT + 2;
-
-    private final char[][] matrix = new char[matrixHeight][matrixWidth];
-
     Board() {
-        clearBoard();
+        initializeBoard();
+        clearMatrix();
     }
 
-    private void clearBoard() {
-        initMatrix();
+    private void initializeBoard() {
+        for (int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                board[i][j] = new EmptySpot();
+            }
+        }
+    }
+
+    public boolean isPositionEmpty(int x, int y) {
+        return isInsideBoard(x, y) && board[y][x].getType() == EntityType.EMPTY_SPOT;
+    }
+
+    public boolean isInsideBoard(int x, int y) {
+        return x >= 0 && y >= 0 && x < WIDTH && y < HEIGHT;
+    }
+
+    public Entity get(int x, int y) {
+        return board[y][x];
+    }
+
+    public boolean set(int x, int y, Entity entity) {
+        if (isPositionEmpty(x, y)) {
+            board[y][x] = entity;
+            return true;
+        }
+        System.out.println("Error setting entity.");
+        return false;
+    }
+
+    public boolean erase(int x, int y) {
+        if (isInsideBoard(x, y)) {
+            board[y][x] = new EmptySpot();
+            return true;
+        }
+        System.out.println("Error erasing entity.");
+        return false;
+    }
+
+
+    private void clearMatrix() {
+        initializeMatrix();
         drawBorders();
     }
 
-    private void initMatrix() {
+    private void initializeMatrix() {
         for (int i = 0; i < matrixHeight; i++) {
             for (int j = 0; j < matrixWidth; j++) {
                 matrix[i][j] = BLANK_CELL;
@@ -49,57 +90,22 @@ public class Board {
         }
     }
 
+    private void mirrorBoardToMatrix() {
+        for (int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                matrix[i + 1][j + 1] = board[i][j].toChar();
+            }
+        }
+    }
+
     public void display() {
+        mirrorBoardToMatrix();
+
         for (int i = 0; i < matrixHeight; i++) {
             for (int j = 0; j < matrixWidth; j++) {
                 System.out.print(matrix[i][j]);
             }
             System.out.println();
-        }
-    }
-
-    public void drawElement(int row, int column, char element) {
-        if (isCellAvailable(row, column)) {
-            setMatrixValue(row, column, element);
-        } else {
-            System.out.println("Error drawing element.");
-        }
-    }
-
-    public void removeElement(int row, int column) {
-        if (isInsideBoard(row, column)) {
-            setMatrixValue(row, column, BLANK_CELL);
-        } else {
-            System.out.println("Error removing element.");
-        }
-    }
-
-    public char getMatrixValue(int row, int column) {
-        return matrix[row + 1][column + 1];
-    }
-
-    public void setMatrixValue(int row, int column, char value) {
-        matrix[row + 1][column + 1] = value;
-    }
-
-    public boolean isCellAvailable(int row, int column) {
-        return isInsideBoard(row, column) && matrix[row + 1][column + 1] == BLANK_CELL;
-    }
-
-    public boolean isInsideBoard(int row, int column) {
-        return row < HEIGHT && column < WIDTH;
-    }
-
-    public void randomlyPlaceObstacles(int count, char obstacle) {
-        for (int i = 0; i < count; i++) {
-            int row, column;
-
-            do {
-                row = (int) (Math.random() * Board.HEIGHT);
-                column = (int) (Math.random() * Board.WIDTH);
-            } while (!isCellAvailable(row, column));
-
-            drawElement(row, column, obstacle);
         }
     }
 }
