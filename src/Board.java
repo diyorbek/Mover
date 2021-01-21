@@ -36,7 +36,7 @@ public class Board {
         return x >= 0 && y >= 0 && x < WIDTH && y < HEIGHT;
     }
 
-    public Entity get(int x, int y) {
+    public Entity select(int x, int y) {
         if (isInsideBoard(x, y)) {
             return board[y][x];
         }
@@ -67,8 +67,8 @@ public class Board {
     }
 
     public boolean moveEntityTo(int originX, int originY, int targetX, int targetY) {
-        Entity origin = get(originX, originY);
-        Entity target = get(targetX, targetY);
+        Entity origin = select(originX, originY);
+        Entity target = select(targetX, targetY);
 
         if ((origin != null) && canMoveEntity(target)) {
             board[originY][originX] = target;
@@ -80,10 +80,21 @@ public class Board {
         return false;
     }
 
+    public boolean moveEntityRight(int x, int y) {
+        return moveEntityTo(x, y, x + 1, y);
+    }
+
     public boolean moveEntityLeft(int x, int y) {
         return moveEntityTo(x, y, x - 1, y);
     }
 
+    public boolean moveEntityUp(int x, int y) {
+        return moveEntityTo(x, y, x, y - 1);
+    }
+
+    public boolean moveEntityDown(int x, int y) {
+        return moveEntityTo(x, y, x, y + 1);
+    }
 
     private void clearMatrix() {
         initializeMatrix();
