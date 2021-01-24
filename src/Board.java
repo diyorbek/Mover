@@ -1,7 +1,7 @@
 public class Board {
     public static final int WIDTH = 40;
     public static final int HEIGHT = 12;
-    private final Entity[][] board = new Entity[HEIGHT][WIDTH];
+    private Entity[][] board = new Entity[HEIGHT][WIDTH];
 
     private final int matrixWidth = WIDTH + 2;
     private final int matrixHeight = HEIGHT + 2;
@@ -26,6 +26,10 @@ public class Board {
                 board[i][j] = new EmptySpot();
             }
         }
+    }
+
+    public void setBoardMap(Entity[][] map) {
+        board = map;
     }
 
     public boolean isPositionEmpty(int x, int y) {
@@ -144,5 +148,34 @@ public class Board {
             }
             System.out.println();
         }
+    }
+
+    static public Board createBoard(char[][] map) {
+        Board board = new Board();
+
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                if (map[y][x] == '#') {
+                    board.insert(x, y, new Box());
+                }
+            }
+        }
+
+        return board;
+    }
+
+    static public void randomizeObstacles(Board board) {
+        int boxCount = 0;
+
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                if (board.select(x, y) instanceof Box) {
+                    boxCount++;
+                    board.erase(x, y);
+                }
+            }
+        }
+
+        Box.randomlyPlaceOnBoard(board, boxCount);
     }
 }
