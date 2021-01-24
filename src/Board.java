@@ -1,11 +1,13 @@
 public class Board {
-    public static final int WIDTH = 40;
-    public static final int HEIGHT = 12;
-    private Entity[][] board = new Entity[HEIGHT][WIDTH];
+    // Properties of board where entities are kept
+    public int width;
+    public int height;
+    private Entity[][] board;
 
-    private final int matrixWidth = WIDTH + 2;
-    private final int matrixHeight = HEIGHT + 2;
-    private final char[][] matrix = new char[matrixHeight][matrixWidth];
+    // Properties of display matrix used for printing
+    private int matrixWidth;
+    private int matrixHeight;
+    private char[][] matrix;
 
     private final char BLANK_CELL = ' ';
     private final char HORIZONTAL_BORDER = '─';
@@ -15,25 +17,30 @@ public class Board {
     private final char BOTTOM_LEFT_BORDER = '└';
     private final char BOTTOM_RIGHT_BORDER = '┘';
 
-    Board() {
+    Board(int width, int height) {
+        this.width = width;
+        this.height = height;
+
         initializeBoard();
         clearMatrix();
     }
 
     private void initializeBoard() {
-        for (int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++) {
+        board = new Entity[height][width];
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 board[i][j] = new EmptySpot();
             }
         }
     }
-    
+
     public boolean isPositionEmpty(int x, int y) {
         return isInsideBoard(x, y) && board[y][x].getType() == EntityType.EMPTY_SPOT;
     }
 
     public boolean isInsideBoard(int x, int y) {
-        return x >= 0 && y >= 0 && x < WIDTH && y < HEIGHT;
+        return x >= 0 && y >= 0 && x < width && y < height;
     }
 
     public Entity select(int x, int y) {
@@ -102,6 +109,10 @@ public class Board {
     }
 
     private void initializeMatrix() {
+        matrixWidth = width + 2;
+        matrixHeight = height + 2;
+        matrix = new char[matrixHeight][matrixWidth];
+
         for (int i = 0; i < matrixHeight; i++) {
             for (int j = 0; j < matrixWidth; j++) {
                 matrix[i][j] = BLANK_CELL;
@@ -128,8 +139,8 @@ public class Board {
     }
 
     private void mirrorBoardToMatrix() {
-        for (int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 matrix[i + 1][j + 1] = board[i][j].toChar();
             }
         }
@@ -147,10 +158,10 @@ public class Board {
     }
 
     static public Board createBoard(char[][] map) {
-        Board board = new Board();
+        Board board = new Board(map[0].length, map.length);
 
-        for (int y = 0; y < HEIGHT; y++) {
-            for (int x = 0; x < WIDTH; x++) {
+        for (int y = 0; y < board.height; y++) {
+            for (int x = 0; x < board.width; x++) {
                 if (map[y][x] == '#') {
                     board.insert(x, y, new Box());
                 }
@@ -163,8 +174,8 @@ public class Board {
     static public void randomizeObstacles(Board board) {
         int boxCount = 0;
 
-        for (int y = 0; y < HEIGHT; y++) {
-            for (int x = 0; x < WIDTH; x++) {
+        for (int y = 0; y < board.height; y++) {
+            for (int x = 0; x < board.width; x++) {
                 if (board.select(x, y) instanceof Box) {
                     boxCount++;
                     board.erase(x, y);
@@ -182,8 +193,8 @@ public class Board {
         char[][] boardMap1 = board1.matrix;
         char[][] boardMap2 = board2.matrix;
 
-        for (int i = 1; i <= HEIGHT; i++) {
-            for (int j = 1; j <= WIDTH; j++) {
+        for (int i = 1; i <= board1.height; i++) {
+            for (int j = 1; j <= board1.width; j++) {
                 if (boardMap1[i][j] == exclude || boardMap2[i][j] == exclude) {
                     continue;
                 }

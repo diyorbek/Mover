@@ -8,8 +8,8 @@ public class Box extends Obstacle {
             int x, y;
 
             do {
-                x = (int) (Math.random() * Board.WIDTH);
-                y = (int) (Math.random() * Board.HEIGHT);
+                x = (int) (Math.random() * board.width);
+                y = (int) (Math.random() * board.height);
             } while (!board.isPositionEmpty(x, y));
 
             board.insert(x, y, new Box());

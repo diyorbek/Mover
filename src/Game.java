@@ -14,7 +14,6 @@ public class Game {
     private static boolean isTargetVisible = false;
     private static final char PLAYER_AVATAR = '█';
 
-
     private static final LevelCollection LEVEL_COLLECTION = new LevelCollection();
     private static int currentLevelNum = 0;
 

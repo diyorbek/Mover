@@ -17,10 +17,6 @@ public class Player extends Entity {
         this.board.insert(position.x, position.y, this);
     }
 
-    public int[] getCurrentPosition() {
-        return new int[]{position.x, position.y};
-    }
-
     public boolean moveRight() {
         if (board.moveEntityRight(position.x, position.y)) {
             ++position.x;
