@@ -27,11 +27,7 @@ public class Board {
             }
         }
     }
-
-    public void setBoardMap(Entity[][] map) {
-        board = map;
-    }
-
+    
     public boolean isPositionEmpty(int x, int y) {
         return isInsideBoard(x, y) && board[y][x].getType() == EntityType.EMPTY_SPOT;
     }
@@ -177,5 +173,27 @@ public class Board {
         }
 
         Box.randomlyPlaceOnBoard(board, boxCount);
+    }
+
+    static public boolean matches(Board board1, Board board2, char exclude) {
+        board1.mirrorBoardToMatrix();
+        board2.mirrorBoardToMatrix();
+
+        char[][] boardMap1 = board1.matrix;
+        char[][] boardMap2 = board2.matrix;
+
+        for (int i = 1; i <= HEIGHT; i++) {
+            for (int j = 1; j <= WIDTH; j++) {
+                if (boardMap1[i][j] == exclude || boardMap2[i][j] == exclude) {
+                    continue;
+                }
+
+                if (boardMap1[i][j] != boardMap2[i][j]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
