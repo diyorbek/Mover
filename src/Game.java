@@ -6,29 +6,44 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Game {
+    private static Timer TIMER;
     private static Board board;
     private static Board activeBoard;
     private static Board targetBoard;
     private static Player player;
     private static boolean isTargetVisible = false;
-    private static final char PlayerAvatar = '█';
+    private static final char PLAYER_AVATAR = '█';
 
-    private static final Timer tmr = new Timer();
-    private static final LevelCollection levelCollection = new LevelCollection();
-    private static final Level currentLevel = levelCollection.getLevel(0);
+
+    private static final LevelCollection LEVEL_COLLECTION = new LevelCollection();
+    private static int currentLevelNum = 0;
 
     public static void main(String[] args) {
+        initGame(currentLevelNum);
+    }
+
+    public static void initGame(int levelNum) {
+        TIMER = new Timer();
+        Level currentLevel = LEVEL_COLLECTION.getLevel(levelNum);
+
         if (currentLevel != null) {
             targetBoard = Board.createBoard(currentLevel.getMap());
             board = Board.createBoard(currentLevel.getMap());
             activeBoard = board;
 
-            player = new Player(PlayerAvatar, activeBoard);
+            player = new Player(PLAYER_AVATAR, activeBoard);
 
             Board.randomizeObstacles(activeBoard);
 
-            tmr.schedule(new MainLoop(), 0, 100);
+            TIMER.schedule(new MainLoop(), 0, 100);
         }
+    }
+
+    public static void finishLevel() {
+        TIMER.cancel();
+        TIMER.purge();
+
+        initGame(currentLevelNum);
     }
 
     static class MainLoop extends TimerTask {
@@ -50,9 +65,11 @@ public class Game {
         }
 
         public void displayBoard() {
-            if (Board.matches(activeBoard, targetBoard, PlayerAvatar)) {
-                tmr.cancel();
-                tmr.purge();
+            if (Board.matches(activeBoard, targetBoard, PLAYER_AVATAR)) {
+                activeBoard.display();
+                finishLevel();
+
+                return;
             }
 
             if (isTargetVisible) {
