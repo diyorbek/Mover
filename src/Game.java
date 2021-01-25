@@ -6,7 +6,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Game {
-    private static Timer TIMER;
+    private static Timer MAIN_LOOP_TIMER;
+    private static int MAIN_LOOP_TIMER_DELAY = 3000; // milliseconds
+    private static int MAIN_LOOP_TIMER_PERIOD = 100; // milliseconds
     private static Board board;
     private static Board activeBoard;
     private static Board targetBoard;
@@ -16,6 +18,10 @@ public class Game {
 
     private static final LevelCollection LEVEL_COLLECTION = new LevelCollection();
     private static int currentLevelNum = 1;
+    private static int currentLevelTimeLimit;
+
+    private static Timer PreviewLoopTimer;
+    private static int previewTimeLimit = 3; // seconds
 
     public static void main(String[] args) {
         Navigator.greet();
@@ -24,7 +30,7 @@ public class Game {
     }
 
     public static void initGame(int levelNum) {
-        TIMER = new Timer();
+        MAIN_LOOP_TIMER = new Timer();
         Level currentLevel = LEVEL_COLLECTION.getLevel(levelNum);
 
         if (currentLevel != null) {
@@ -36,23 +42,41 @@ public class Game {
 
             Board.randomizeObstacles(activeBoard);
 
-            TIMER.schedule(new MainLoop(), 0, 100);
+            PreviewLoopTimer = new Timer();
+            PreviewLoopTimer.schedule(new PreviewLoop(), 0, 1000);
+
+            MAIN_LOOP_TIMER.schedule(new MainLoop(), MAIN_LOOP_TIMER_DELAY, MAIN_LOOP_TIMER_PERIOD);
         }
     }
 
     public static void finishLevel() {
-        TIMER.cancel();
-        TIMER.purge();
+        MAIN_LOOP_TIMER.cancel();
+        MAIN_LOOP_TIMER.purge();
 
         if (currentLevelNum + 1 > LEVEL_COLLECTION.getLength()) {
             Navigator.finishGame();
-            
+
             return;
         } else {
             Navigator.finishLevel(currentLevelNum);
         }
 
         initGame(++currentLevelNum);
+    }
+
+    static class PreviewLoop extends TimerTask {
+        public void run() {
+            ConsoleHelpers.clearConsole();
+
+            System.out.println("Level " + currentLevelNum);
+            targetBoard.display();
+            System.out.println("Start in " + (previewTimeLimit--) + "s");
+
+            if (previewTimeLimit < 0) {
+                PreviewLoopTimer.cancel();
+                PreviewLoopTimer.purge();
+            }
+        }
     }
 
     static class MainLoop extends TimerTask {

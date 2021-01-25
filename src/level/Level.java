@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 
 public class Level {
     private final char[][] map;
+    private final int timeLimit;
 
     Level(String sourceFilePath) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(sourceFilePath);
@@ -14,10 +15,11 @@ public class Level {
 
         // Read first line to get map dimensions and initialize map
         String lineString = bufferedReader.readLine();
-        String[] mapDimension = lineString.split(" ");
+        String[] mapInfo = lineString.split(" ");
 
-        int mapWidth = Integer.parseInt(mapDimension[0]);
-        int mapHeight = Integer.parseInt(mapDimension[1]);
+        int mapWidth = Integer.parseInt(mapInfo[0]);
+        int mapHeight = Integer.parseInt(mapInfo[1]);
+        timeLimit = Integer.parseInt(mapInfo[2]);
 
         map = new char[mapHeight][mapWidth];
 
@@ -32,5 +34,9 @@ public class Level {
 
     public char[][] getMap() {
         return map;
+    }
+
+    public int getTimeLimit() {
+        return timeLimit;
     }
 }
