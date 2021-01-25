@@ -15,9 +15,11 @@ public class Game {
     private static final char PLAYER_AVATAR = '█';
 
     private static final LevelCollection LEVEL_COLLECTION = new LevelCollection();
-    private static int currentLevelNum = 0;
+    private static int currentLevelNum = 1;
 
     public static void main(String[] args) {
+        Navigator.greet();
+
         initGame(currentLevelNum);
     }
 
@@ -42,7 +44,15 @@ public class Game {
         TIMER.cancel();
         TIMER.purge();
 
-        initGame(currentLevelNum);
+        if (currentLevelNum + 1 > LEVEL_COLLECTION.getLength()) {
+            Navigator.finishGame();
+            
+            return;
+        } else {
+            Navigator.finishLevel(currentLevelNum);
+        }
+
+        initGame(++currentLevelNum);
     }
 
     static class MainLoop extends TimerTask {
@@ -64,6 +74,8 @@ public class Game {
         }
 
         public void displayBoard() {
+            System.out.println("Level " + currentLevelNum);
+
             if (Board.matches(activeBoard, targetBoard, PLAYER_AVATAR)) {
                 activeBoard.display();
                 finishLevel();

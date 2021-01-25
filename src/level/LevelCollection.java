@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class LevelCollection {
     private final Level[] levels;
-    public int length;
+    private final int length;
 
     public LevelCollection() {
         File folder = new File("level");
@@ -38,6 +38,10 @@ public class LevelCollection {
     }
 
     public Level getLevel(int n) {
-        return levels[n];
+        return levels[n - 1];
+    }
+
+    public int getLength() {
+        return length;
     }
 }
