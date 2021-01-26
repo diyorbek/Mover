@@ -9,7 +9,8 @@ public class LevelCollection {
     private final int length;
 
     public LevelCollection() {
-        File folder = new File("level");
+        String projectFolderPath = LevelCollection.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+        File folder = new File(projectFolderPath + "/level");
         File[] files = folder.listFiles();
 
         int filesCount = 0;

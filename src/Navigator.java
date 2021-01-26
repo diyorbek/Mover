@@ -29,6 +29,12 @@ public class Navigator {
         scanner.nextLine();
     }
 
+    public static void loseLevel() {
+        System.out.println("\nOoops!!\n" +
+                "You ran out of time and lost the game." +
+                "Press ENTER to start from Level 1 ...");
+        scanner.nextLine();
+    }
 
     public static void finishLevel(int levelNum) {
         System.out.println("\nLevel " + levelNum + " is completed!!!\n" +
