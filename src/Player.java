@@ -1,5 +1,5 @@
 public class Player extends Entity {
-    private class Position {
+    private static class Position {
         public int x, y;
 
         Position(int x, int y) {

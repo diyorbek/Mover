@@ -1,5 +1,6 @@
 import java.util.Scanner;
 
+// Helpers for navigating user and printing info
 public class Navigator {
     private static final Scanner scanner = new Scanner(System.in);
 
@@ -11,8 +12,8 @@ public class Navigator {
                 "/_/ /_/ /_/\\____/|___/\\___/_/     \n" +
                 "                                  ");
 
-        System.out.println("Welcome to Mover!");
-        System.out.println("Game has multiple levels. At the beginning of each level\n" +
+        System.out.println("Welcome to Mover!\n"
+                + "Game has multiple levels. At the beginning of each level\n" +
                 "you will be shown a board wil boxes for 3 seconds.\n" +
                 "Then boxes will be spread across the board randomly.\n" +
                 "Your task is to move the boxes to turn the board to its initial state.\n" +
@@ -25,7 +26,6 @@ public class Navigator {
                 "e - see target board\n\n" +
                 "To push or pull a box hold SHIFT key and use controls.\n\n" +
                 "Press ENTER to start Level 1 ...");
-
         scanner.nextLine();
     }
 
@@ -47,5 +47,10 @@ public class Navigator {
                 "You have completed all the levels and win the game!\n\n" +
                 "Press ENTER to exit the game ...");
         scanner.nextLine();
+    }
+
+    public static void clearConsole() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }

@@ -46,7 +46,7 @@ public class Game {
         Board.randomizeObstacles(activeBoard);
 
         // Displays preview until `MAIN_LOOP_TIMER_DELAY` ends
-        previewTarget();
+        previewCurrentLevelTarget();
 
         // Start level timer earlier
         // with margin of MAIN_LOOP_TIMER_DELAY
@@ -61,7 +61,14 @@ public class Game {
         MAIN_LOOP_TIMER.schedule(new MainLoop(), MAIN_LOOP_TIMER_DELAY + 10);
     }
 
-    public static void finishLevel() {
+    public static void previewCurrentLevelTarget() {
+        Navigator.clearConsole();
+        System.out.println("Level " + currentLevelNum);
+        targetBoard.display();
+        System.out.println("Start in " + (MAIN_LOOP_TIMER_DELAY / 1000) + "s");
+    }
+
+    public static void finishCurrentLevel() {
         stopCurrentLevelTimer();
         MAIN_LOOP_TIMER.cancel();
         MAIN_LOOP_TIMER.purge();
@@ -75,16 +82,9 @@ public class Game {
         initGame(++currentLevelNum);
     }
 
-    public static void loseLevel() {
+    public static void loseCurrentLevel() {
         Navigator.loseLevel();
         initGame(currentLevelNum = 1);
-    }
-
-    public static void previewTarget() {
-        ConsoleHelpers.clearConsole();
-        System.out.println("Level " + currentLevelNum);
-        targetBoard.display();
-        System.out.println("Start in " + (MAIN_LOOP_TIMER_DELAY / 1000) + "s");
     }
 
     public static void stopCurrentLevelTimer() {
@@ -122,7 +122,7 @@ public class Game {
     static class MainLoop extends TimerTask {
         public void run() {
             while (true) {
-                ConsoleHelpers.clearConsole();
+                Navigator.clearConsole();
 
                 boolean shouldStopLoop = displayBoard();
                 if (shouldStopLoop) {
@@ -137,12 +137,11 @@ public class Game {
         }
 
         public boolean displayBoard() {
-            System.out.println("Level " + currentLevelNum);
-
             if (isTargetVisible) {
                 activeBoard = targetBoard;
             }
 
+            System.out.println("Level " + currentLevelNum);
             activeBoard.display();
             System.out.println("Time left: " + formattedCurrentLevelTimeLimit);
             System.out.println("Timer stops at: " + timerStopsAt);
@@ -153,12 +152,12 @@ public class Game {
             }
 
             if (Board.matches(activeBoard, targetBoard, PLAYER_AVATAR)) {
-                finishLevel();
+                finishCurrentLevel();
                 return true;
             }
 
             if (currentLevelTimeLimit < 0) {
-                loseLevel();
+                loseCurrentLevel();
                 return true;
             }
 

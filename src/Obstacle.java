@@ -3,8 +3,8 @@ enum ObstacleType {
 }
 
 public class Obstacle extends Entity {
-    private ObstacleType obstacleType;
-    private boolean isMovable;
+    private final ObstacleType obstacleType;
+    private final boolean isMovable;
 
     Obstacle(ObstacleType obstacleType, boolean isMovable, char displayValue) {
         super(EntityType.OBSTACLE, displayValue);
