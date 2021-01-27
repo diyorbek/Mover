@@ -15,8 +15,8 @@ public class LevelCollection {
         File folder = new File(projectFolderPath + "/level");
         File[] files = folder.listFiles();
 
+        // Count .txt files
         int filesCount = 0;
-
         for (int i = 0; i < Objects.requireNonNull(files).length; i++) {
             File file = files[i];
             if (file.getName().endsWith(".txt")) {
@@ -25,13 +25,15 @@ public class LevelCollection {
         }
 
         levels = new Level[filesCount];
+
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
 
             if (file.getName().endsWith(".txt")) {
-                Pattern p = Pattern.compile("\\d+");
+                Pattern p = Pattern.compile("\\d+"); // Matches files with digits
                 Matcher m = p.matcher(file.getName());
 
+                // Sava level with its corresponding index number
                 if (m.find()) {
                     int j = Integer.parseInt(m.group()) - 1;
 
@@ -47,6 +49,7 @@ public class LevelCollection {
         length = levels.length;
     }
 
+    // Level number starts from 1
     public Level getLevel(int n) {
         return levels[n - 1];
     }

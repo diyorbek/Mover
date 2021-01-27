@@ -73,6 +73,7 @@ public class Game {
         MAIN_LOOP_TIMER.cancel();
         MAIN_LOOP_TIMER.purge();
 
+        // Finish game after completing last level
         if (currentLevelNum + 1 > LEVEL_COLLECTION.getLength()) {
             Navigator.finishGame();
             return;
@@ -84,7 +85,7 @@ public class Game {
 
     public static void loseCurrentLevel() {
         Navigator.loseLevel();
-        initGame(currentLevelNum = 1);
+        initGame(currentLevelNum = 1); // Restart from level 1
     }
 
     public static void stopCurrentLevelTimer() {
@@ -101,7 +102,8 @@ public class Game {
 
             if (timerStopsAt.equals("")) {
                 SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-                Date date = new Date(new Date().getTime() + currentLevelTimeLimit);
+                long endTimestamp = new Date().getTime() + currentLevelTimeLimit;
+                Date date = new Date(endTimestamp);
                 timerStopsAt = formatter.format(date);
             }
 
@@ -129,6 +131,7 @@ public class Game {
                     return;
                 }
 
+                // Read user commands in bulk and execute
                 String userInput = scanner.nextLine();
                 for (int i = 0; i < userInput.length(); i++) {
                     executeUserCommand(userInput.charAt(i));

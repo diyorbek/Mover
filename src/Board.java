@@ -70,9 +70,9 @@ public class Board {
 
     private boolean canMoveEntity(Entity entity) {
         return entity != null && !(entity instanceof Obstacle);
-
     }
 
+    // Moves entity by swapping
     public boolean moveEntityTo(int originX, int originY, int targetX, int targetY) {
         Entity origin = select(originX, originY);
         Entity target = select(targetX, targetY);
@@ -138,6 +138,7 @@ public class Board {
         }
     }
 
+    // Extract display values of entities to matrix
     private void mirrorBoardToMatrix() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -157,6 +158,7 @@ public class Board {
         }
     }
 
+    // Creates board with given map(matrix) of entities
     static public Board createBoard(char[][] map) {
         Board board = new Board(map[0].length, map.length);
 
@@ -171,6 +173,7 @@ public class Board {
         return board;
     }
 
+    // Randomize the places of exiting obstacles in the board
     static public void randomizeObstacles(Board board) {
         int boxCount = 0;
 
@@ -186,6 +189,7 @@ public class Board {
         Box.randomlyPlaceOnBoard(board, boxCount);
     }
 
+    // Compare matrices of 2 boards
     static public boolean matches(Board board1, Board board2, char exclude) {
         board1.mirrorBoardToMatrix();
         board2.mirrorBoardToMatrix();
