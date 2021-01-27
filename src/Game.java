@@ -1,7 +1,9 @@
 import level.Level;
 import level.LevelCollection;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,26 +19,23 @@ public class Game {
     private static int currentLevelNum = 1;
 
     private static Timer CURRENT_LEVEL_TIMER;
-    private static int currentLevelTimeLimit;
+    private static final int CURRENT_LEVEL_TIMER_PERIOD = 1000;
+    private static int currentLevelTimeLimit; // milliseconds
     private static String formattedCurrentLevelTimeLimit;
-
-    private static Timer PREVIEW_LOOP_TIMER;
-    private static int previewTimeLimit = 3; // seconds
+    private static String timerStopsAt = "";
 
     private static Timer MAIN_LOOP_TIMER;
-    private static int MAIN_LOOP_TIMER_DELAY = 3000; // milliseconds
-    private static int MAIN_LOOP_TIMER_PERIOD = 100; // milliseconds
+    private static final int MAIN_LOOP_TIMER_DELAY = 3000; // milliseconds
+
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         Navigator.greet();
-
         initGame(currentLevelNum);
     }
 
     public static void initGame(int levelNum) {
         Level currentLevel = LEVEL_COLLECTION.getLevel(levelNum);
-        currentLevelTimeLimit = currentLevel.getTimeLimit();
-        previewTimeLimit = 3;
 
         targetBoard = Board.createBoard(currentLevel.getMap());
         board = Board.createBoard(currentLevel.getMap());
@@ -46,67 +45,69 @@ public class Game {
 
         Board.randomizeObstacles(activeBoard);
 
-        // Display preview for 3 seconds
-        PREVIEW_LOOP_TIMER = new Timer();
-        PREVIEW_LOOP_TIMER.schedule(new PreviewLoop(), 0, 1000);
+        // Displays preview until `MAIN_LOOP_TIMER_DELAY` ends
+        previewTarget();
 
-        // Start level timer
+        // Start level timer earlier
+        // with margin of MAIN_LOOP_TIMER_DELAY
+        // to initialize timer info
+        currentLevelTimeLimit = currentLevel.getTimeLimit() * 1000 + MAIN_LOOP_TIMER_DELAY;
         CURRENT_LEVEL_TIMER = new Timer();
-        CURRENT_LEVEL_TIMER.schedule(new CurrentLevelTimerLoop(), MAIN_LOOP_TIMER_DELAY, 1000);
+        CURRENT_LEVEL_TIMER.schedule(new CurrentLevelTimerLoop(), 0, CURRENT_LEVEL_TIMER_PERIOD);
 
-        // Start displaying level with randomized board
+        // Start displaying level with randomized board after delay
+        // Add 10ms extra margin to catch up with CURRENT_LEVEL_TIMER's latest updates
         MAIN_LOOP_TIMER = new Timer();
-        MAIN_LOOP_TIMER.schedule(new MainLoop(), MAIN_LOOP_TIMER_DELAY, MAIN_LOOP_TIMER_PERIOD);
+        MAIN_LOOP_TIMER.schedule(new MainLoop(), MAIN_LOOP_TIMER_DELAY + 10);
     }
 
     public static void finishLevel() {
+        stopCurrentLevelTimer();
         MAIN_LOOP_TIMER.cancel();
         MAIN_LOOP_TIMER.purge();
-        CURRENT_LEVEL_TIMER.cancel();
-        CURRENT_LEVEL_TIMER.purge();
 
         if (currentLevelNum + 1 > LEVEL_COLLECTION.getLength()) {
             Navigator.finishGame();
-
             return;
-        } else {
-            Navigator.finishLevel(currentLevelNum);
         }
 
+        Navigator.finishLevel(currentLevelNum);
         initGame(++currentLevelNum);
     }
 
     public static void loseLevel() {
-        MAIN_LOOP_TIMER.cancel();
-        MAIN_LOOP_TIMER.purge();
-        CURRENT_LEVEL_TIMER.cancel();
-        CURRENT_LEVEL_TIMER.purge();
-
         Navigator.loseLevel();
-
         initGame(currentLevelNum = 1);
     }
 
-    static class PreviewLoop extends TimerTask {
-        public void run() {
-            ConsoleHelpers.clearConsole();
+    public static void previewTarget() {
+        ConsoleHelpers.clearConsole();
+        System.out.println("Level " + currentLevelNum);
+        targetBoard.display();
+        System.out.println("Start in " + (MAIN_LOOP_TIMER_DELAY / 1000) + "s");
+    }
 
-            if (previewTimeLimit < 0) {
-                PREVIEW_LOOP_TIMER.cancel();
-                PREVIEW_LOOP_TIMER.purge();
-            }
-
-            System.out.println("Level " + currentLevelNum);
-            targetBoard.display();
-            System.out.println("Start in " + (previewTimeLimit--) + "s");
-        }
+    public static void stopCurrentLevelTimer() {
+        CURRENT_LEVEL_TIMER.cancel();
+        CURRENT_LEVEL_TIMER.purge();
     }
 
     static class CurrentLevelTimerLoop extends TimerTask {
         public void run() {
+            if (currentLevelTimeLimit < 0) {
+                stopCurrentLevelTimer();
+                return;
+            }
+
+            if (timerStopsAt.equals("")) {
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+                Date date = new Date(new Date().getTime() + currentLevelTimeLimit);
+                timerStopsAt = formatter.format(date);
+            }
+
             String formattedString = "";
-            int mins = currentLevelTimeLimit / 60;
-            int seconds = currentLevelTimeLimit % 60;
+            int mins = currentLevelTimeLimit / 1000 / 60;
+            int seconds = (currentLevelTimeLimit / 1000) % 60;
 
             if (mins > 0) {
                 formattedString += (mins + "m ");
@@ -114,29 +115,28 @@ public class Game {
             formattedString += (seconds + "s");
 
             formattedCurrentLevelTimeLimit = formattedString;
-            currentLevelTimeLimit--;
+            currentLevelTimeLimit -= CURRENT_LEVEL_TIMER_PERIOD;
         }
     }
 
     static class MainLoop extends TimerTask {
         public void run() {
-            try {
-                ConsoleHelpers.setTerminalToCBreak();
+            while (true) {
                 ConsoleHelpers.clearConsole();
 
-                displayBoard();
-            } catch (IOException | InterruptedException e) {
-                System.err.println("IOException");
-            } finally {
-                try {
-                    ConsoleHelpers.stty(ConsoleHelpers.ttyConfig.trim());
-                } catch (Exception e) {
-                    System.err.println("Exception restoring tty config");
+                boolean shouldStopLoop = displayBoard();
+                if (shouldStopLoop) {
+                    return;
+                }
+
+                String userInput = scanner.nextLine();
+                for (int i = 0; i < userInput.length(); i++) {
+                    executeUserCommand(userInput.charAt(i));
                 }
             }
         }
 
-        public void displayBoard() {
+        public boolean displayBoard() {
             System.out.println("Level " + currentLevelNum);
 
             if (isTargetVisible) {
@@ -145,6 +145,7 @@ public class Game {
 
             activeBoard.display();
             System.out.println("Time left: " + formattedCurrentLevelTimeLimit);
+            System.out.println("Timer stops at: " + timerStopsAt);
 
             if (isTargetVisible) {
                 activeBoard = board;
@@ -153,29 +154,19 @@ public class Game {
 
             if (Board.matches(activeBoard, targetBoard, PLAYER_AVATAR)) {
                 finishLevel();
-
-                return;
+                return true;
             }
 
             if (currentLevelTimeLimit < 0) {
                 loseLevel();
-
-                return;
+                return true;
             }
 
-            try {
-                if (System.in.available() != 0) {
-                    listenKeyboard();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return false;
         }
 
-        public void listenKeyboard() throws IOException {
-            int c = System.in.read();
-
-            switch (c) {
+        public void executeUserCommand(char input) {
+            switch (input) {
                 case 'd':
                     player.moveRight();
                     break;

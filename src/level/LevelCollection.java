@@ -3,6 +3,8 @@ package level;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LevelCollection {
     private final Level[] levels;
@@ -23,14 +25,21 @@ public class LevelCollection {
         }
 
         levels = new Level[filesCount];
-        for (int i = 0, j = 0; i < files.length; i++) {
+        for (int i = 0; i < files.length; i++) {
             File file = files[i];
 
             if (file.getName().endsWith(".txt")) {
-                try {
-                    levels[j++] = new Level(file.getPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                Pattern p = Pattern.compile("\\d+");
+                Matcher m = p.matcher(file.getName());
+
+                if (m.find()) {
+                    int j = Integer.parseInt(m.group()) - 1;
+
+                    try {
+                        levels[j] = new Level(file.getPath());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
